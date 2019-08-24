@@ -11,6 +11,7 @@ import { InstagramService } from "./InstagramService";
 import { MessengerSender } from "./MessengerSender";
 import { User } from "../model/dao/User";
 import { Tag } from "../model/messenger/Tag";
+import logger from "../util/logger";
 
 @injectable()
 export class CartoonBot {
@@ -162,12 +163,14 @@ export class CartoonBot {
   }
 
   private setCartoonUpdateSchedule(): void {
+    logger.info("Setting up cartoon update schedule");
     setInterval((): void => {
       this.sendCartoonUpdateForAllUsers();
     }, this.CARTOON_UPDATE_MINUTE_INTERVAL * 60 * 1000);
   }
 
   private sendCartoonUpdateForAllUsers(): void {
+    logger.info("Sending cartoon updates to all users");
     const users = this.instagramDao.getUsers().filter((user: User): boolean => {
       return user.enableNotification;
     });
