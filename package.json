@@ -1,0 +1,56 @@
+{
+  "name": "messenger-cartoon-bot",
+  "version": "1.0.0",
+  "description": "A facebook messenger bot that sends you cartoon updates from tumblr.",
+  "main": "build/index.js",
+  "scripts": {
+    "start": "node build/index.js",
+    "start-get-started": "node build/script/getStarted.js",
+    "build": "npm run build-ts && npm run lint",
+    "build-ts": "tsc -p tsconfig.build.json",
+    "lint": "eslint '*/**/*.ts' --fix",
+    "test": "jest --coverage --verbose"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "@util/(.*)": "<rootDir>/src/util/$1"
+    }
+  },
+  "keywords": [
+    "bot",
+    "cartoon",
+    "messenger",
+    "instagram"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^5.4.2",
+    "express": "^4.17.1",
+    "inversify": "^5.0.1",
+    "inversify-express-utils": "^6.3.2",
+    "morgan": "^1.9.1",
+    "puppeteer": "^1.19.0",
+    "reflect-metadata": "^0.1.13",
+    "request": "^2.88.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^5.4.0",
+    "@types/express": "^4.17.0",
+    "@types/jest": "^24.0.17",
+    "@types/morgan": "^1.7.36",
+    "@types/puppeteer": "^1.19.0",
+    "@types/request": "^2.48.2",
+    "@types/winston": "^2.4.4",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
+    "eslint": "^6.1.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.9.0",
+    "jest-express": "^1.10.1",
+    "prettier": "1.18.2",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3"
+  }
+}
