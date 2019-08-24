@@ -27,7 +27,7 @@ npm start
 | get started     | Triggered by the "Get Started" button. Sends a greeting message. |
 | help            | Display a list of available commands.                            |
 
-![screenshot for get started and help](https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/getStarted_help.PNG =250x)
+<img src="https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/getStarted_help.PNG" width="350">
 
 | Command               | Description                                                    |
 | --------------------- | ---------------------------------------------------------------|
@@ -35,20 +35,20 @@ npm start
 | subscribe [account]   | Subscribe to an Instagram account for cartoon updates.         |
 | unsubscribe [account] | Unsubscribe from an Instagram account for cartoon updates.     |
 
-![screenshot for subscription](https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/subscription.PNG)
+<img src="https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/subscription.PNG" width="350">
 
 | Command               | Description                                                                |
 | --------------------- | ---------------------------------------------------------------------------|
 | notification [on/off] | Turn on/off cartoon update notification. By default, it's on.              |
 | update                | Check if there are cartoon updates. This is useful if notification is off. |
 
-![screenshot for notification](https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/notification.PNG)
+<img src="https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/notification.PNG" width="350">
 
 | Command             | Description                           |
 | ------------------- | --------------------------------------|
 | unsupported command | Sends a "I don't understand" message. |
 
-![screenshot for unsupported command](https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/unknown.PNG)
+<img src="https://raw.githubusercontent.com/wli75/messenger-cartoon-bot/master/asset/unknown.PNG" width="350">
 
 ## Technologies used
 ### `dependencies`
