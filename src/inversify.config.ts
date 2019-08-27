@@ -1,5 +1,6 @@
 // declare metadata by @controller annotation
 import "./controller/MessengerController";
+import "./controller/HealthCheckController";
 
 import { Container } from "inversify";
 import { InstagramDao } from "./dao/InstagramDao";

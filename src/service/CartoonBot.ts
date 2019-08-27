@@ -187,8 +187,7 @@ export class CartoonBot {
     psid: string,
     msgType: MessagingType
   ): Promise<void> {
-    const subscriptions = this.instagramDao.getSubscriptionsByPsid(psid);
-    const blogWithPost = await this.createUpdatePost(psid, subscriptions);
+    const blogWithPost = await this.createUpdatePost(psid);
     if (blogWithPost) {
       const blog = blogWithPost[0];
       const instagramPost = blogWithPost[1];
@@ -207,9 +206,9 @@ export class CartoonBot {
   }
 
   private async createUpdatePost(
-    psid: string,
-    subscriptions: Subscription[]
+    psid: string
   ): Promise<[Blog, InstagramPost] | undefined> {
+    const subscriptions = this.instagramDao.getSubscriptionsByPsid(psid);
     const posts = this.instagramDao.getLatestSentPosts(psid);
     const subscriptionWithPosts = this.createSubscriptionWithPosts(
       subscriptions,
