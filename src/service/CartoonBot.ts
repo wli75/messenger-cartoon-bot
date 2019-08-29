@@ -6,7 +6,7 @@ import { Subscription } from "../model/dao/Subscription";
 import { Post as InstagramPost } from "../model/instagram/Post";
 import { MessagingType } from "../model/messenger/MessagingType";
 import TYPES from "../types";
-import { compareTimeString } from "../util/dateUtils";
+import { compareDate } from "../util/dateUtils";
 import { InstagramService } from "./InstagramService";
 import { MessengerSender } from "./MessengerSender";
 import { User } from "../model/dao/User";
@@ -16,7 +16,7 @@ import logger from "../util/logger";
 @injectable()
 export class CartoonBot {
   // Glitch projects will sleep after 5 min (https://glitch.com/help/restrictions/)
-  private CARTOON_UPDATE_MINUTE_INTERVAL = 4;
+  private CARTOON_UPDATE_HOUR_INTERVAL = 1;
   private LINE_BREAK = "\n";
   private DEFAULT_INSTAGRAM_ACCOUNTS = ["safely_endangered", "dami_lee"];
   private COMMANDS = [
@@ -164,19 +164,34 @@ export class CartoonBot {
 
   private setCartoonUpdateSchedule(): void {
     logger.info("Setting up cartoon update schedule");
+    this.sendCartoonUpdateForAllUsers();
     setInterval((): void => {
       this.sendCartoonUpdateForAllUsers();
-    }, this.CARTOON_UPDATE_MINUTE_INTERVAL * 60 * 1000);
+    }, this.CARTOON_UPDATE_HOUR_INTERVAL * 60 * 60 * 1000);
   }
 
   private sendCartoonUpdateForAllUsers(): void {
-    logger.info("Sending cartoon updates to all users");
-    const users = this.instagramDao.getUsers().filter((user: User): boolean => {
-      return user.enableNotification;
-    });
-    users.forEach((user: User): void => {
-      this.sendCartoonUpdate(user.psid, MessagingType.MessageTag);
-    });
+    const updateTs = this.instagramDao.getLastCartoonUpdateTs();
+
+    if (!updateTs || !this.tsWithinRangeFromNow(updateTs)) {
+      logger.info("Sending cartoon updates to all users");
+      const users = this.instagramDao
+        .getUsers()
+        .filter((user: User): boolean => {
+          return user.enableNotification;
+        });
+      users.forEach((user: User): void => {
+        this.sendCartoonUpdate(user.psid, MessagingType.MessageTag);
+      });
+      this.instagramDao.insertOrUpdateLastCartoonUpdateTs();
+    }
+  }
+
+  private tsWithinRangeFromNow(ts: Date): boolean {
+    const now = new Date().getTime();
+    return (
+      now - ts.getTime() < this.CARTOON_UPDATE_HOUR_INTERVAL * 60 * 60 * 1000
+    );
   }
 
   /**
@@ -254,6 +269,6 @@ export class CartoonBot {
   ): number {
     if (!a[1]) return -1;
     else if (!b[1]) return 1;
-    else return compareTimeString(a[1].transactFromTs, b[1].transactFromTs);
+    else return compareDate(a[1].transactFromTs, b[1].transactFromTs);
   }
 }

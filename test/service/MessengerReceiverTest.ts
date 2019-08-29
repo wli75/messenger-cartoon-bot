@@ -9,6 +9,9 @@ import { MessengerReceiver } from "../../src/service/MessengerReceiver";
 import { MessengerSender } from "../../src/service/MessengerSender";
 import { MessagingType } from "../../src/model/messenger/MessagingType";
 
+jest.mock("../../src/service/MessengerSender");
+jest.mock("../../src/service/InstagramService");
+jest.mock("../../src/dao/InstagramDao");
 jest.mock("../../src/service/CartoonBot");
 
 function createEvent(messaging: ReceiveMessaging[]): Event {
@@ -46,15 +49,15 @@ function createGetStartedPostbackMessaging(): ReceiveMessaging {
   };
 }
 
-describe("InstagramService", (): void => {
+describe("MessengerReceiver", (): void => {
   let cartoonBot: jest.Mocked<CartoonBot>;
   let messengerReceiver: MessengerReceiver;
 
   beforeEach((): void => {
     cartoonBot = new CartoonBot(
-      new MessengerSender(),
-      new InstagramService(),
-      new InstagramDao()
+      new MessengerSender() as jest.Mocked<MessengerSender>,
+      new InstagramService() as jest.Mocked<InstagramService>,
+      new InstagramDao() as jest.Mocked<InstagramDao>
     ) as jest.Mocked<CartoonBot>;
     messengerReceiver = new MessengerReceiver(cartoonBot);
   });

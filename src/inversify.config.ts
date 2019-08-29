@@ -15,7 +15,10 @@ container
   .bind<MessengerReceiver>(TYPES.MessengerReceiver)
   .to(MessengerReceiver);
 container.bind<MessengerSender>(TYPES.MessengerSender).to(MessengerSender);
-container.bind<CartoonBot>(TYPES.CartoonBot).to(CartoonBot).inSingletonScope();
+container
+  .bind<CartoonBot>(TYPES.CartoonBot)
+  .to(CartoonBot)
+  .inSingletonScope();
 container.bind<InstagramService>(TYPES.InstagramService).to(InstagramService);
 container.bind<InstagramDao>(TYPES.InstagramDao).to(InstagramDao);
 

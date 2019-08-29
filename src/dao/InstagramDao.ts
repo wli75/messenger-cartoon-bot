@@ -4,6 +4,7 @@ import { Post } from "../model/dao/Post";
 import { Subscription } from "../model/dao/Subscription";
 import Database = require("better-sqlite3");
 import { User } from "../model/dao/User";
+import { toDate } from "../util/dateUtils";
 
 @injectable()
 export class InstagramDao {
@@ -42,6 +43,10 @@ export class InstagramDao {
         transactFromTs TEXT NOT NULL,
         PRIMARY KEY(psid, blogId, postId),
         FOREIGN KEY(psid, blogId) REFERENCES MessengerInstagramSubscription(psid, blogId) ON DELETE CASCADE
+      )`).run();
+      this.db.prepare(`CREATE TABLE IF NOT EXISTS LastCartoonUpdate(
+        id INTEGER PRIMARY KEY,
+        dbTs TEXT NOT NULL
       )`).run();
     })();
   }
@@ -142,7 +147,17 @@ export class InstagramDao {
     const stmt = this.db.prepare(
       "SELECT psid, blogId, postId, transactFromTs FROM SentInstagramPost WHERE psid = ? AND transactToTs = datetime('9999-12-31 00:00:00.000')"
     );
-    return stmt.all(psid);
+    const posts = stmt.all(psid).map(
+      (row: any): Post => {
+        return {
+          psid: row.psid,
+          blogId: row.blogId,
+          postId: row.postId,
+          transactFromTs: toDate(row.transactFromTs),
+        };
+      }
+    );
+    return posts;
   }
 
   public deleteBlog(blogId: number): void {
@@ -155,5 +170,18 @@ export class InstagramDao {
       "DELETE FROM MessengerInstagramSubscription WHERE psid = ? AND blogId = ?"
     );
     stmt.run(psid, blogId);
+  }
+
+  public getLastCartoonUpdateTs(): Date | undefined {
+    const stmt = this.db.prepare("SELECT dbTs FROM LastCartoonUpdate");
+    const row = stmt.get();
+    return row ? toDate(row.dbTs) : row;
+  }
+
+  public insertOrUpdateLastCartoonUpdateTs(): void {
+    const stmt = this.db.prepare(
+      "INSERT OR REPLACE INTO LastCartoonUpdate(id, dbTs) VALUES (1, datetime('now'))"
+    );
+    stmt.run();
   }
 }

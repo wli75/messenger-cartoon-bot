@@ -10,11 +10,103 @@ import { CartoonBot } from "../../src/service/CartoonBot";
 import { InstagramService } from "../../src/service/InstagramService";
 import { MessengerSender } from "../../src/service/MessengerSender";
 import { Tag } from "../../src/model/messenger/Tag";
+import { User } from "../../src/model/dao/User";
 
 jest.mock("../../src/service/MessengerSender");
 jest.mock("../../src/service/InstagramService");
 jest.mock("../../src/dao/InstagramDao");
 jest.useFakeTimers();
+
+describe("CartoonBot constructor", (): void => {
+  test("should set interval", async (): Promise<void> => {
+    const messengerSender = new MessengerSender() as jest.Mocked<
+      MessengerSender
+    >;
+    const instagramService = new InstagramService() as jest.Mocked<
+      InstagramService
+    >;
+    const instagramDao = new InstagramDao() as jest.Mocked<InstagramDao>;
+
+    instagramDao.getUsers.mockImplementation((): User[] => {
+      return [];
+    });
+
+    new CartoonBot(messengerSender, instagramService, instagramDao);
+
+    expect(setInterval).toHaveBeenCalledTimes(1);
+  });
+
+  test("should send update if there is no update timestamp", (): void => {
+    const messengerSender = new MessengerSender() as jest.Mocked<
+      MessengerSender
+    >;
+    const instagramService = new InstagramService() as jest.Mocked<
+      InstagramService
+    >;
+    const instagramDao = new InstagramDao() as jest.Mocked<InstagramDao>;
+
+    instagramDao.getUsers.mockImplementation((): User[] => {
+      return [];
+    });
+    instagramDao.getLastCartoonUpdateTs.mockImplementation((): undefined => {
+      return undefined;
+    });
+
+    new CartoonBot(messengerSender, instagramService, instagramDao);
+
+    expect(instagramDao.getUsers).toHaveBeenCalled();
+    expect(instagramDao.insertOrUpdateLastCartoonUpdateTs).toHaveBeenCalled();
+  });
+
+  test("should not send update if update timestamp is within the interval", (): void => {
+    const messengerSender = new MessengerSender() as jest.Mocked<
+      MessengerSender
+    >;
+    const instagramService = new InstagramService() as jest.Mocked<
+      InstagramService
+    >;
+    const instagramDao = new InstagramDao() as jest.Mocked<InstagramDao>;
+
+    instagramDao.getUsers.mockImplementation((): User[] => {
+      return [];
+    });
+    instagramDao.getLastCartoonUpdateTs.mockImplementation(
+      (): Date => {
+        return new Date();
+      }
+    );
+
+    new CartoonBot(messengerSender, instagramService, instagramDao);
+
+    expect(instagramDao.getUsers).toHaveBeenCalledTimes(0);
+  });
+
+  test("should send update if the update timestamp is outside the interval", async (): Promise<
+    void
+  > => {
+    const messengerSender = new MessengerSender() as jest.Mocked<
+      MessengerSender
+    >;
+    const instagramService = new InstagramService() as jest.Mocked<
+      InstagramService
+    >;
+    const instagramDao = new InstagramDao() as jest.Mocked<InstagramDao>;
+
+    instagramDao.getUsers.mockImplementation((): User[] => {
+      return [];
+    });
+    instagramDao.getLastCartoonUpdateTs.mockImplementation(
+      (): Date => {
+        return new Date(2000, 1, 1);
+      }
+    );
+
+    new CartoonBot(messengerSender, instagramService, instagramDao);
+
+    expect(instagramDao.getUsers).toHaveBeenCalled();
+    expect(instagramDao.insertOrUpdateLastCartoonUpdateTs).toHaveBeenCalled();
+  });
+});
 
 describe("CartoonBot", (): void => {
   let messengerSender: jest.Mocked<MessengerSender>;
@@ -26,17 +118,16 @@ describe("CartoonBot", (): void => {
     messengerSender = new MessengerSender() as jest.Mocked<MessengerSender>;
     instagramService = new InstagramService() as jest.Mocked<InstagramService>;
     instagramDao = new InstagramDao() as jest.Mocked<InstagramDao>;
+
+    instagramDao.getUsers.mockImplementation((): User[] => {
+      return [];
+    });
+
     cartoonBot = new CartoonBot(
       messengerSender,
       instagramService,
       instagramDao
     );
-  });
-
-  describe("setCartoonUpdateSchedule", (): void => {
-    test("should set interval", async (): Promise<void> => {
-      expect(setInterval).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe("getStarted", (): void => {
@@ -248,13 +339,13 @@ describe("CartoonBot", (): void => {
               psid: "psid",
               blogId: 1,
               postId: "postId1",
-              transactFromTs: "2019-08-25 00:00:00",
+              transactFromTs: new Date(2019, 8, 25, 0, 0, 0),
             },
             {
               psid: "psid",
               blogId: 2,
               postId: "postId1",
-              transactFromTs: "2019-08-24 00:00:00",
+              transactFromTs: new Date(2019, 8, 24, 0, 0, 0),
             },
           ];
         }
@@ -291,7 +382,7 @@ describe("CartoonBot", (): void => {
               psid: "psid",
               blogId: 1,
               postId: "postId1",
-              transactFromTs: "2019-08-24 00:00:00",
+              transactFromTs: new Date(2019, 8, 24, 0, 0, 0),
             },
           ];
         }
@@ -375,7 +466,7 @@ describe("CartoonBot", (): void => {
               psid: "psid",
               blogId: 1,
               postId: "postId1",
-              transactFromTs: "2019-08-25 00:00:00",
+              transactFromTs: new Date(2019, 8, 25, 0, 0, 0),
             },
           ];
         }
@@ -412,7 +503,7 @@ describe("CartoonBot", (): void => {
               psid: "psid",
               blogId: 1,
               postId: "postId1",
-              transactFromTs: "2019-08-24 00:00:00",
+              transactFromTs: new Date(2019, 8, 24, 0, 0, 0),
             },
           ];
         }
